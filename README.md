@@ -5,6 +5,7 @@ jQuery plugin that allows you to track if any form has changed since .dirtyForm(
 ## Usage
 
 After including it
+
 	$( "#my_form" ).dirtyForm();
 	// .. make changes to form fields
 	alert( $( "my_form" ).attr( "dirty" ) );
