@@ -1,0 +1,68 @@
+
+$( "document" ).ready( function(){
+	  CKEDITOR.on('instanceReady', function(e){ 
+	  e.editor.on("key", function(){
+	    $( e.editor.element.$ ).parents("form:first").trigger("ckeditor-change"); 
+	  });
+
+	  e.editor.on("saveSnapshot", function(){
+	    $( e.editor.element.$ ).parents("form:first").trigger("ckeditor-change"); 
+	  });
+	});
+});
+
+(function($){
+
+  jQuery.fn.dirtyForm = function(options) {
+    jQuery.fn.check_dirtiness = function(){
+
+    	for ( instance in CKEDITOR.instances ){
+        x = CKEDITOR.instances[instance].updateElement();
+      }
+
+    	if( form.serialized_data() != form.initial_serialized_data )
+    		form.set_dirty();
+    	else
+    		form.set_clean();
+		};
+
+		jQuery.fn.changeable_elements = function(){
+			return $( this ).find( "input, select, checkbox" );
+		};
+
+		jQuery.fn.serialized_data = function(){
+			return $( this ).serialize();
+		};
+
+		jQuery.fn.set_dirty = function(){
+			$( this ).attr( "dirty", true );
+		};
+
+		jQuery.fn.set_clean = function(){
+			$( this ).attr( "dirty", false );
+		};
+
+		jQuery.fn.reset_serialized_data = function(){
+			$( this ).initial_serialized_data = $( this ).serialize();
+		};
+
+		jQuery.fn.submit_click = function(){
+			form.set_clean();
+			form.reset_serialized_data();
+		};
+
+		var form = $( this );
+		form.set_clean();
+		form.initial_serialized_data = form.serialize();
+		var is_dirty = false;
+
+		form.on( "change", "input, select, checkbox, textarea", form.check_dirtiness );
+		form.on( "keyup", "input, textarea", form.check_dirtiness ); 
+		form.on( "reach-added", form.check_dirtiness );
+		form.on( "ckeditor-change", form.check_dirtiness );
+		form.on( "click", "a.submit_form, input[name='commit'], input[type='submit'], button[name='commit'], button[type='submit']", form.submit_click );
+		if( form.data("submit-id") ) // Custom submit button/a/w/e that might be outside of the form
+			$( document ).on( "click", "#" + form.data("submit-id"), form.submit_click );
+	};
+
+})( jQuery );
